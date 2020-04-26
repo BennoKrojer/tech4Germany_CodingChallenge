@@ -6,7 +6,7 @@ The app uses data from the REST-API [PegelOnline](https://www.pegelonline.wsv.de
 
 ## Installations
 
-To install the necessary libraries, run "pip install -r requirements.txt".
+To install the necessary libraries, run "pip install -r requirements.txt", ideally in a Python virtual environment.
 
 ## Usage
 Simply run app.py (e.g. command "python3 app.py").
