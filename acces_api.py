@@ -1,7 +1,11 @@
 import requests
+import config
+import display
 
 
 def get_stations(json, city_keyword):
+    # here I could hard-code the four shortnames for the spots (PASSAU ILZSTADT, PASSAU DONAU, PASSAU LUITPOLDBRÜCKE
+    # DFH, PASSAU STEINBACHBRÜCKE DFH). But instead I chose a more general approach that looks for PASSAU generally
     return [station for station in json if city_keyword in station['longname']]
 
 
@@ -10,17 +14,16 @@ def get_station_status(station):
     trend = station['timeseries'][0]['currentMeasurement']['trend']
     return water_value, trend
 
-if __name__ == '__main__':
-    url = 'https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations.json?includeTimeseries=true' \
-          '&includeCurrentMeasurement=true'
-    # here I could hard-code the four shortnames for the spots (PASSAU ILZSTADT, PASSAU DONAU, PASSAU LUITPOLDBRÜCKE DFH,
-    # PASSAU STEINBACHBRÜCKE DFH). But instead I chose a more general approach that looks for PASSAU generally
-    city = 'PASSAU'
+
+def get_city_status(url, city):
     stations_json = requests.get(url).json()
     stations = get_stations(stations_json, city)
+    result = []
     for station in stations:
-        print(station['longname'])
         water_level, trend = get_station_status(station)
-        print(f'level: {water_level}')
-        print(f'trend: {trend}')
-
+        city_info = {'station': station['longname'],
+                     'level': water_level,
+                     'trend': display.emojify(config.trends[trend]),
+                     'warnings': display.emojify(display.get_warnings(water_level))}
+        result.append(city_info)
+    return result
